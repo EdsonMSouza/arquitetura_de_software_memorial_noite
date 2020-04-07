@@ -6,7 +6,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,19 +28,6 @@ public class AlunosController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AlunosController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Oi, sou de novo</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -56,7 +42,17 @@ public class AlunosController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        // vamos usar o doGet para realizar a listagem dos alunos
+        response.setContentType("text/html;charset=UTF-8");
+
+        // cria uma variável para ser enviada para a View (view_mensagem.jsp)
+        // parâmetros ("nome_da_variável", "valor da variável")
+        request.setAttribute("dados", "Listagem dos alunos");
+
+        // redireciona para a View (view_mensagem.jsp)
+        request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+
     }
 
     /**
@@ -70,7 +66,32 @@ public class AlunosController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.setContentType("text/html;charset=UTF-8");
+
+        // pega o valor enviado na variável "operacao"
+        String operacao = request.getParameter("operacao");
+        switch (operacao) {
+            case "Inserir":
+                request.setAttribute("mensagem", "Aluno cadastrado com sucesso!");
+                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                break;
+            case "Pesquisar":
+                request.setAttribute("mensagem", "Tela de Pesquisa");
+                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                break;
+            case "Editar":
+                request.setAttribute("mensagem", "Tela de Edição");
+                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                break;
+            case "Atualizar":
+                request.setAttribute("mensagem", "Atualizado com sucesso!!!");
+                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                break;
+            case "Excluir":
+                request.setAttribute("mensagem", "TAluno removido com sucesso!!!");
+                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                break;
+        }
     }
 
     /**

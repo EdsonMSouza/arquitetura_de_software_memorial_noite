@@ -5,7 +5,7 @@
 <c:import url="topo.jsp" />
 
 <div class="alert-success text-center espaco">
-    Página Inicial da Aplicação
+    Editar Usuário
 </div>
 
 <c:import url="rodape.jsp" />

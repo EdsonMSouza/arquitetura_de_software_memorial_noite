@@ -5,7 +5,11 @@
 <c:import url="topo.jsp" />
 
 <div class="alert-success text-center espaco">
-    Página Inicial da Aplicação
+    Tela de Mensagens
 </div>
+
+<%-- A variável mensagem é substituida pelo envio do Controller --%>
+<c:out value = "${mensagem}" />
+
 
 <c:import url="rodape.jsp" />
