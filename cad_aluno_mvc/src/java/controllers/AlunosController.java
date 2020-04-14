@@ -5,17 +5,23 @@
  */
 package controllers;
 
+import beans.Aluno;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import models.AlunosModel;
 
 /**
  *
  * @author souza
  */
 public class AlunosController extends HttpServlet {
+
+    List<Aluno> alunosDados; // armazenar todos os alunos recuperados pelo Model
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,13 +52,25 @@ public class AlunosController extends HttpServlet {
         // vamos usar o doGet para realizar a listagem dos alunos
         response.setContentType("text/html;charset=UTF-8");
 
-        // cria uma variável para ser enviada para a View (view_mensagem.jsp)
-        // parâmetros ("nome_da_variável", "valor da variável")
-        request.setAttribute("dados", "Listagem dos alunos");
+        // Chamar o AlunosModel()
+        try {
+            // chamar o nosso Model
+            AlunosModel am = new AlunosModel();
 
-        // redireciona para a View (view_mensagem.jsp)
-        request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+            // atribui os valores retornados à lista de alunos
+            alunosDados = am.listar();
 
+            // cria uma variável para ser enviada para a View (view_mensagem.jsp)
+            // parâmetros ("nome_da_variável", "valor da variável")
+            request.setAttribute("listaAlunos", alunosDados);
+
+            // redireciona para a View (view_listar.jsp)
+            request.getRequestDispatcher("view_listar.jsp").forward(request, response);
+
+        } catch (SQLException ex) {
+            request.setAttribute("mensagem", ex);
+            request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+        }
     }
 
     /**

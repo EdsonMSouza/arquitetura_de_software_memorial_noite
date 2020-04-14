@@ -8,4 +8,13 @@
     Listagem de Usuários
 </div>
 
+<c:forEach var="aluno" items="${listaAlunos}">
+    <p>ID: ${aluno.id}</p>
+    <p>RA: ${aluno.ra}</p>
+    <p>NOME: ${aluno.nome}</p>
+    <p>CURSO: ${aluno.curso}</p>
+    <br>
+</c:forEach>
+
+
 <c:import url="rodape.jsp" />
