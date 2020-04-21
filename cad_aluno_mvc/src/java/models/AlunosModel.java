@@ -58,4 +58,32 @@ public class AlunosModel implements Serializable {
             throw new RuntimeException("Falha ao listar.", ex);
         }
     }
+
+    public List<Aluno> pesquisar(Aluno aluno) {
+        List<Aluno> alunos = new ArrayList();
+        try {
+            String sql = "SELECT * FROM alunos WHERE ra=? ORDER BY nome ASC";
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setInt(1, aluno.getRa());
+
+            System.out.println("RA:" + aluno.getRa());
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                aluno = new Aluno();
+                aluno.setId(rs.getInt("id"));
+                aluno.setRa(rs.getInt("ra"));
+                aluno.setNome(rs.getString("nome"));
+                aluno.setCurso(rs.getString("curso"));
+                alunos.add(aluno);
+            }
+            rs.close();
+            ps.close();
+            return alunos;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Falha ao listar.", ex);
+        } catch (NumberFormatException nfe) {
+            throw new RuntimeException("RA inválido", nfe);
+        }
+    }
 }

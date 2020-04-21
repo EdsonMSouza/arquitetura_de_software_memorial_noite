@@ -9,6 +9,10 @@
             .espaco{
                 margin: 0 0 20px 0;
             }
+
+            .erro{
+                color: red;
+            }
         </style>
 
     </head>

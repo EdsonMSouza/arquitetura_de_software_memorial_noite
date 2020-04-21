@@ -21,6 +21,10 @@ import models.AlunosModel;
  */
 public class AlunosController extends HttpServlet {
 
+    int ra;
+    String nome;
+    String curso;
+    Aluno aluno = new Aluno();
     List<Aluno> alunosDados; // armazenar todos os alunos recuperados pelo Model
 
     /**
@@ -62,10 +66,13 @@ public class AlunosController extends HttpServlet {
 
             // cria uma variável para ser enviada para a View (view_mensagem.jsp)
             // parâmetros ("nome_da_variável", "valor da variável")
-            request.setAttribute("listaAlunos", alunosDados);
+            request.setAttribute(
+                    "listaAlunos",
+                    alunosDados);
 
             // redireciona para a View (view_listar.jsp)
-            request.getRequestDispatcher("view_listar.jsp").forward(request, response);
+            request.getRequestDispatcher("view_listar.jsp").
+                    forward(request, response);
 
         } catch (SQLException ex) {
             request.setAttribute("mensagem", ex);
@@ -86,19 +93,50 @@ public class AlunosController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        // pega o valor enviado na variável "operacao"
+        // pega o valor enviado na variável "operacao" e "ra"
         String operacao = request.getParameter("operacao");
+
+        // quando receber o RA do formulário, testar se é um número
+        try {
+            ra = Integer.parseInt(request.getParameter("ra"));
+            System.out.println("RA do Controller: " + ra);
+        } catch (NumberFormatException nfe) {
+            request.setAttribute("mensagem", "Informe um RA válido");
+            request.getRequestDispatcher("view_pesquisar.jsp").forward(request, response);
+        }
+
         switch (operacao) {
             case "Inserir":
                 request.setAttribute("mensagem", "Aluno cadastrado com sucesso!");
-                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                request.getRequestDispatcher("mensagem.jsp").forward(request, response);
                 break;
+
             case "Pesquisar":
-                request.setAttribute("mensagem", "Tela de Pesquisa");
-                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                try {
+                    // criando o objeto Model para o Aluno
+                    AlunosModel am = new AlunosModel();
+                    //criar um objeto Aluno para passar como parâmetro
+                    aluno.setRa(ra);
+                    // chama o model para realizar a pesquisa
+                    alunosDados = am.pesquisar(aluno);
+                    // testar se há registros a serem exibidos
+                    if (alunosDados.isEmpty()) {
+                        request.setAttribute("mensagem", "Registro não encontrado.");
+                        request.getRequestDispatcher("view_pesquisar.jsp").
+                                forward(request, response);
+                    } else {
+                        request.setAttribute("listaAlunos", alunosDados);
+                        request.getRequestDispatcher("view_listar.jsp").
+                                forward(request, response);
+                    }
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+                }
                 break;
             case "Editar":
-                request.setAttribute("mensagem", "Tela de Edição");
+                request.setAttribute("mensagem", ra);
                 request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
                 break;
             case "Atualizar":

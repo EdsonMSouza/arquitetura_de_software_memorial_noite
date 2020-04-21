@@ -22,6 +22,7 @@
             <input type="submit" class="form-control btn btn-primary" name="bt_pesquisar" value="Pesquisar"/>
         </div>
     </div>
+    <span class="erro"><c:out value = "${mensagem}" /></span>
 </form>
 
 <c:import url="rodape.jsp" />
