@@ -91,34 +91,81 @@ public class AlunosController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
         // pega o valor enviado na variável "operacao" e "ra"
         String operacao = request.getParameter("operacao");
 
-        // quando receber o RA do formulário, testar se é um número
-        try {
-            ra = Integer.parseInt(request.getParameter("ra"));
-            System.out.println("RA do Controller: " + ra);
-        } catch (NumberFormatException nfe) {
-            request.setAttribute("mensagem", "Informe um RA válido");
-            request.getRequestDispatcher("view_pesquisar.jsp").forward(request, response);
-        }
-
+        /*
+            // quando receber o RA do formulário, testar se é um número
+            try {
+                ra = Integer.parseInt(request.getParameter("ra"));
+                System.out.println("RA do Controller: " + ra);
+            } catch (NumberFormatException nfe) {
+                request.setAttribute("mensagem", "Informe um RA válido");
+                request.getRequestDispatcher("view_pesquisar.jsp").forward(request, response);
+            }
+         */
         switch (operacao) {
             case "Inserir":
-                request.setAttribute("mensagem", "Aluno cadastrado com sucesso!");
-                request.getRequestDispatcher("mensagem.jsp").forward(request, response);
+                try {
+                    // recuperar os valores informados
+                    aluno.setRa(Integer.parseInt(request.getParameter("ra")));
+                    aluno.setNome(request.getParameter("nome"));
+                    aluno.setCurso(request.getParameter("curso"));
+
+                    AlunosModel am = new AlunosModel();
+                    // Passo o objeto aluno como parâmetro e insere no banco
+                    am.inserir(aluno);
+
+                    request.setAttribute("mensagem",
+                            am.toString());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+
+                    // Erro com o formato numérico do RA
+                } catch (NumberFormatException nfe) {
+                    request.setAttribute("mensagem", "Informe um RA válido.");
+                    request.getRequestDispatcher("view_cadastrar.jsp").
+                            forward(request, response);
+                }
                 break;
 
             case "Pesquisar":
+                String valorDigitado = request.getParameter("valor");
+
                 try {
                     // criando o objeto Model para o Aluno
                     AlunosModel am = new AlunosModel();
                     //criar um objeto Aluno para passar como parâmetro
-                    aluno.setRa(ra);
+                    //aluno.setRa(ra);
+
+                    // verificar quem está chegando (campo a ser pesquisado)
+                    switch (request.getParameter("tipo")) {
+                        case "ra":
+                            aluno.setRa(Integer.parseInt(valorDigitado));
+                            break;
+
+                        case "nome":
+                            aluno.setNome(valorDigitado);
+                            break;
+
+                        case "curso":
+                            aluno.setCurso(valorDigitado);
+                            break;
+                    }
+
                     // chama o model para realizar a pesquisa
-                    alunosDados = am.pesquisar(aluno);
+                    alunosDados = am.pesquisar(aluno, request.getParameter("tipo"));
+
                     // testar se há registros a serem exibidos
                     if (alunosDados.isEmpty()) {
                         request.setAttribute("mensagem", "Registro não encontrado.");
@@ -133,8 +180,15 @@ public class AlunosController extends HttpServlet {
                     request.setAttribute("mensagem", ex.getMessage());
                     request.getRequestDispatcher("view_mensagem.jsp").
                             forward(request, response);
+
+                    // Erro com o formato numérico do RA
+                } catch (NumberFormatException nfe) {
+                    request.setAttribute("mensagem", "Digite um RA válido");
+                    request.getRequestDispatcher("view_pesquisar.jsp").
+                            forward(request, response);
                 }
                 break;
+
             case "Editar":
                 request.setAttribute("mensagem", ra);
                 request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);

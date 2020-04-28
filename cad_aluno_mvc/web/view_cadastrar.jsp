@@ -37,6 +37,7 @@
                 value="Cadastrar"/>
         </div>
     </div>
+    <span class="erro"><c:out value = "${mensagem}" /></span>
 </form>
 
 <c:import url="rodape.jsp" />

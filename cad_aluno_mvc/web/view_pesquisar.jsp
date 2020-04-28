@@ -10,16 +10,21 @@
 
 <form name="pesquisar" method="post" action="AlunosController">
     <div class="row">
-        <div class="col-md-5 mb-3">
-            <label>RA</label>
-            <input type="text" class="form-control" name="ra" />
+        <div class="form-group col-md-5 mb-2">
+            <input type="text" class="form-control" name="valor" placeholder="Digite o valor para procura"/>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-5 mb-3">
+        <!-- Inserir um Caixa de Seleção com as opções -->
+        <div class="form-group col-md-3 mb-2">
+            <select class="form-control" name="tipo">
+                <option value="ra">Ra</option>
+                <option value="nome">Nome</option>
+                <option value="curso">Curso</option>
+            </select>
+        </div>
+        <div class="form-group col-md-3 mb-2">
             <input type="hidden" name="operacao" value="Pesquisar" />
-            <input type="submit" class="form-control btn btn-primary" name="bt_pesquisar" value="Pesquisar"/>
+            <input type="submit" class="form-control btn btn-primary"
+                   name="bt_pesquisar" value="Pesquisar"/>
         </div>
     </div>
     <span class="erro"><c:out value = "${mensagem}" /></span>

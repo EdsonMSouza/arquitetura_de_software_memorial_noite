@@ -59,14 +59,30 @@ public class AlunosModel implements Serializable {
         }
     }
 
-    public List<Aluno> pesquisar(Aluno aluno) {
+    public List<Aluno> pesquisar(Aluno aluno, String tipo) {
         List<Aluno> alunos = new ArrayList();
+        PreparedStatement ps = null;
+        String sql = new String();
         try {
-            String sql = "SELECT * FROM alunos WHERE ra=? ORDER BY nome ASC";
-            PreparedStatement ps = conexao.prepareStatement(sql);
-            ps.setInt(1, aluno.getRa());
+            switch (tipo) {
+                case "ra":
+                    sql = "SELECT * FROM alunos WHERE ra = ? ORDER BY nome ASC";
+                    ps = conexao.prepareStatement(sql);
+                    ps.setInt(1, aluno.getRa());
+                    break;
 
-            System.out.println("RA:" + aluno.getRa());
+                case "nome":
+                    sql = "SELECT * FROM alunos WHERE nome = ? ORDER BY nome ASC";
+                    ps = conexao.prepareStatement(sql);
+                    ps.setString(1, aluno.getNome());
+                    break;
+
+                case "curso":
+                    sql = "SELECT * FROM alunos WHERE curso = ? ORDER BY nome ASC";
+                    ps = conexao.prepareStatement(sql);
+                    ps.setString(1, aluno.getCurso());
+                    break;
+            }
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -81,9 +97,37 @@ public class AlunosModel implements Serializable {
             ps.close();
             return alunos;
         } catch (SQLException ex) {
-            throw new RuntimeException("Falha ao listar.", ex);
+            throw new RuntimeException("Falha ao Pesquisar.", ex);
         } catch (NumberFormatException nfe) {
             throw new RuntimeException("RA inválido", nfe);
         }
+    }
+
+    // método para inserir um aluno
+    public void inserir(Aluno aluno) {
+        try {
+            String sql
+                    = "INSERT INTO alunos (ra, nome, curso) VALUES (?, ?, ?)";
+            try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+                // atribuir os valor do objeto ao "ps"
+                ps.setInt(1, aluno.getRa());
+                ps.setString(2, aluno.getNome());
+                ps.setString(3, aluno.getCurso());
+
+                // executar o SQL no banco de dados
+                ps.execute();
+                ps.close();
+            }
+            conexao.close();
+            this.status
+                    = "Aluno [" + aluno.getNome() + "] inserido com sucesso!";
+        } catch (SQLException ex) {
+            this.status = "Erro ao inserir o aluno [" + ex.getMessage() + "]";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return status;
     }
 }
