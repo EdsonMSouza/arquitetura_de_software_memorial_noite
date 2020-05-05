@@ -5,7 +5,7 @@
 <c:import url="topo.jsp" />
 
 <div class="alert-success text-center espaco">
-    Editar Dados do Usuário
+    Excluir Usuário?
 </div>
 <c:forEach var="aluno" items="${alunoDados}">
     <form name="editar" method="post" action="AlunosController">
@@ -16,35 +16,24 @@
         </div>
         <div class="row">
             <div class="col-md-5 mb-3">
-                <label>NOME</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    name="nome"
-                    value="${aluno.nome}"
-                    />
+                <label>NOME: :&nbsp;${aluno.nome}</label>
             </div>
         </div>
         <div class="row">
             <div class="col-md-5 mb-3">
-                <label>CURSO</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    name="curso"
-                    value="${aluno.curso}"
-                    />
+                <label>NOME: :&nbsp;${aluno.curso}</label>
             </div>
         </div>
         <div class="row">
             <div class="col-md-5 mb-3">
-                <input type="hidden" name="operacao" value="Atualizar" />
+                <input type="hidden" name="operacao" value="ConfirmaExclusao" />
                 <input type="hidden" name="ra" value="${aluno.ra}" />
+                <input type="hidden" name="nome" value="${aluno.nome}" />
                 <input
                     type="submit"
                     class="form-control btn btn-primary"
                     name="bt_enviar"
-                    value="Salvar"/>
+                    value="Confirma?"/>
             </div>
         </div>
     </form>

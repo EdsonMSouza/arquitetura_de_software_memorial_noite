@@ -26,6 +26,7 @@ public class AlunosController extends HttpServlet {
     String curso;
     Aluno aluno = new Aluno();
     List<Aluno> alunosDados; // armazenar todos os alunos recuperados pelo Model
+    List<Aluno> alunoDados; // retorna o dado apenas de um Aluno
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -190,16 +191,83 @@ public class AlunosController extends HttpServlet {
                 break;
 
             case "Editar":
-                request.setAttribute("mensagem", ra);
-                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                try {
+                    AlunosModel am = new AlunosModel();
+                    aluno.setRa(Integer.parseInt(request.getParameter("ra")));
+                    alunoDados = am.pesquisar(aluno, "ra");
+
+                    // antes de enviar para edição, guardar os dados atuais
+                    // ou em uma Session ou então em uma tabela temporária
+                    // registrar o ID ou da Session ou do registro temporário
+                    request.setAttribute("alunoDados", alunoDados);
+                    request.getRequestDispatcher("view_editar.jsp").
+                            forward(request, response);
+
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+                }
                 break;
+
             case "Atualizar":
-                request.setAttribute("mensagem", "Atualizado com sucesso!!!");
-                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                try {
+                    // atribuindo os valores que vieram do formulário de edição
+                    aluno.setRa(Integer.parseInt(request.getParameter("ra")));
+                    aluno.setNome(request.getParameter("nome"));
+                    aluno.setCurso(request.getParameter("curso"));
+
+                    AlunosModel am = new AlunosModel();
+                    am.atualizar(aluno);
+
+                    // recupero o ID anterior e gravo em uma tabela
+                    // de log (Gerencimanento de Log)
+                    request.setAttribute("mensagem", am.toString());
+                    request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+                }
                 break;
+
             case "Excluir":
-                request.setAttribute("mensagem", "TAluno removido com sucesso!!!");
-                request.getRequestDispatcher("view_mensagem.jsp").forward(request, response);
+                try {
+                    AlunosModel am = new AlunosModel();
+                    aluno.setRa(Integer.parseInt(request.getParameter("ra")));
+                    alunoDados = am.pesquisar(aluno, "ra");
+
+                    // antes de enviar para edição, guardar os dados atuais
+                    // ou em uma Session ou então em uma tabela temporária
+                    // registrar o ID ou da Session ou do registro temporário
+                    request.setAttribute("alunoDados", alunoDados);
+                    request.getRequestDispatcher("view_excluir.jsp").
+                            forward(request, response);
+
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+                }
+                break;
+
+            case "ConfirmaExclusao":
+                try {
+                    AlunosModel am = new AlunosModel();
+                    aluno.setRa(Integer.parseInt(request.getParameter("ra")));
+                    aluno.setNome(request.getParameter("nome"));
+                    am.excluir(aluno);
+
+                    request.setAttribute("mensagem", am.toString());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+
+                } catch (SQLException ex) {
+                    request.setAttribute("mensagem", ex.getMessage());
+                    request.getRequestDispatcher("view_mensagem.jsp").
+                            forward(request, response);
+                }
                 break;
         }
     }

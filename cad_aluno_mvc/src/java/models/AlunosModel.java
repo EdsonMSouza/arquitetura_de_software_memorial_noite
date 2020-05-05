@@ -126,6 +126,43 @@ public class AlunosModel implements Serializable {
         }
     }
 
+    public void atualizar(Aluno aluno) {
+        try {
+            String sql = "UPDATE alunos SET nome = ?, curso = ? WHERE ra = ?";
+            try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+                ps.setString(1, aluno.getNome());
+                ps.setString(2, aluno.getCurso());
+                ps.setInt(3, aluno.getRa());
+
+                ps.executeUpdate();
+                ps.close();
+            }
+            conexao.close();
+            this.status
+                    = "Aluno [" + aluno.getRa() + "] alterado com sucesso!";
+        } catch (SQLException ex) {
+            this.status = "Erro ao alterar o aluno [" + ex.getMessage() + "]";
+        }
+    }
+
+    public void excluir(Aluno aluno) {
+        String nome = aluno.getNome();
+        try {
+            String sql = "DELETE FROM alunos WHERE ra = ?";
+            try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+                ps.setInt(1, aluno.getRa());
+
+                ps.execute();
+                ps.close();
+            }
+            conexao.close();
+            this.status
+                    = "Aluno [" + nome + "] excluído com sucesso!";
+        } catch (SQLException ex) {
+            this.status = "Erro ao excluir o aluno [" + ex.getMessage() + "]";
+        }
+    }
+
     @Override
     public String toString() {
         return status;
